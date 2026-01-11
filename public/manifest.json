@@ -1,0 +1,17 @@
+{
+    "name": "Antigravity",
+    "short_name": "Antigravity",
+    "description": "Premium Sports Studio Management",
+    "start_url": "/dashboard",
+    "display": "standalone",
+    "background_color": "#09090b",
+    "theme_color": "#09090b",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/icon.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+}

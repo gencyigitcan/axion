@@ -4,16 +4,17 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { LayoutDashboard, Users, Calendar, Settings, LogOut, Activity, FolderOpen, UserCog, BarChart3 } from 'lucide-react'
+import { LayoutDashboard, Users, Calendar, Settings, LogOut, Activity, FolderOpen, UserCog, BarChart3, Utensils } from 'lucide-react'
 import { cn } from '@/lib/utils' // Note: need to create utils if not exists, but usually simple clsx is fine here.
+import { NotificationPopover } from '@/components/notification-popover'
 import { toast } from 'sonner'
 
 const SIDEBAR_ITEMS = [
     { label: 'Overview', icon: LayoutDashboard, href: '/dashboard' },
     { label: 'Calendar', icon: Calendar, href: '/dashboard/calendar' },
-    { label: 'Profile', icon: UserCog, href: '/dashboard/profile' },
-    { label: 'Members', icon: Users, href: '/dashboard/members' },
     { label: 'Classes', icon: Activity, href: '/dashboard/classes' },
+    { label: 'Members', icon: Users, href: '/dashboard/members' },
+    { label: 'Nutrition', icon: Utensils, href: '/dashboard/nutrition' },
     { label: 'Reports', icon: BarChart3, href: '/dashboard/reports' },
     { label: 'Settings', icon: Settings, href: '/dashboard/settings' },
 ]
@@ -28,6 +29,15 @@ export default function DashboardLayout({
     const supabase = createClient()
 
     const [isLoading, setIsLoading] = useState(true)
+    const [allowedFeatures, setAllowedFeatures] = useState<any>({
+        classes: true,
+        members: true,
+        nutrition: true,
+        calendar: true,
+        reports: true,
+        settings: true,
+        overview: true
+    })
 
     useEffect(() => {
         const checkProfile = async () => {
@@ -38,7 +48,7 @@ export default function DashboardLayout({
                 // Check if user has a profile (belongs to a tenant)
                 const { data: profile } = await supabase
                     .from('user_profiles')
-                    .select('tenant_id')
+                    .select('tenant_id, tenant:tenants(features)')
                     .eq('user_id', user.id)
                     .single()
 
@@ -46,6 +56,15 @@ export default function DashboardLayout({
                     // New User -> Go to Onboarding
                     router.replace('/onboarding')
                 } else {
+                    // @ts-ignore
+                    if (profile.tenant?.features) {
+                        // @ts-ignore
+                        const feats = profile.tenant.features
+                        setAllowedFeatures(prev => ({
+                            ...prev,
+                            ...feats
+                        }))
+                    }
                     setIsLoading(false)
                 }
             } catch (error) {
@@ -90,6 +109,17 @@ export default function DashboardLayout({
 
                 <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                     {SIDEBAR_ITEMS.map((item) => {
+                        // Feature Toggle Logic
+                        const featureKey = item.label.toLowerCase()
+                        // Explicitly allow Overview and Settings, check others against allowedFeatures
+                        const isAllowed =
+                            featureKey === 'overview' ||
+                            featureKey === 'settings' ||
+                            featureKey === 'profile' ||
+                            allowedFeatures[featureKey] !== false; // Default to true if undefined, explicit false hides it
+
+                        if (!isAllowed) return null
+
                         const isActive = pathname === item.href
                         return (
                             <Link
@@ -124,7 +154,12 @@ export default function DashboardLayout({
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-64 p-4 md:p-8 overflow-x-hidden">
+            <main className="flex-1 md:ml-64 p-4 md:p-8 overflow-x-hidden relative">
+                {/* Mobile Header / Top Bar for Notifications */}
+                <div className="flex justify-end mb-4 md:absolute md:top-6 md:right-8 z-30">
+                    <NotificationPopover />
+                </div>
+
                 <div className="max-w-7xl mx-auto space-y-8">
                     {children}
                 </div>

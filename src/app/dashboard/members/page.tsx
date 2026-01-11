@@ -9,6 +9,7 @@ import {
     MoreHorizontal, Copy, Check, CreditCard, Loader2, Plus
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 type UserProfile = {
@@ -259,6 +260,15 @@ export default function MembersPage() {
                                     </td>
                                     <td className="p-4 text-right">
                                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            {/* Profile Page Link */}
+                                            <Link
+                                                href={`/dashboard/members/${member.user_id}`}
+                                                className="bg-white/5 hover:bg-white/10 text-white p-1.5 rounded transition-colors"
+                                                title="Detay & Belgeler"
+                                            >
+                                                <User className="w-4 h-4" />
+                                            </Link>
+
                                             {/* Role Select */}
                                             {member.role !== 'owner' && (
                                                 <select
@@ -351,6 +361,6 @@ export default function MembersPage() {
                 )}
             </AnimatePresence>
 
-        </div>
+        </div >
     )
 }

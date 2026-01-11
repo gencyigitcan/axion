@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { Loader2, Save, Building, User, Palette } from 'lucide-react'
+import { Loader2, Save, Building, User, Palette, ToggleLeft } from 'lucide-react'
 
 export default function SettingsPage() {
     const [loading, setLoading] = useState(true)
@@ -15,6 +15,13 @@ export default function SettingsPage() {
     const [fullName, setFullName] = useState('')
     const [gymName, setGymName] = useState('')
     const [brandColor, setBrandColor] = useState('#3b82f6') // default blue
+    const [features, setFeatures] = useState<any>({
+        classes: true,
+        members: true,
+        nutrition: true,
+        calendar: true,
+        reports: true
+    })
 
     const supabase = createClient()
 
@@ -48,6 +55,9 @@ export default function SettingsPage() {
                 setGymName(profile.tenant.name)
                 // @ts-ignore
                 setBrandColor(profile.tenant.brand_config?.colors?.primary || '#3b82f6')
+                if (profile.tenant.features) {
+                    setFeatures(profile.tenant.features)
+                }
             }
 
         } catch (error: any) {
@@ -87,7 +97,8 @@ export default function SettingsPage() {
                 .from('tenants')
                 .update({
                     name: gymName,
-                    brand_config: { colors: { primary: brandColor } }
+                    brand_config: { colors: { primary: brandColor } },
+                    features: features
                 })
                 .eq('id', tenant.id)
 
@@ -95,7 +106,7 @@ export default function SettingsPage() {
             toast.success('Stüdyo ayarları güncellendi')
 
             // Update local state to reflect check
-            setTenant({ ...tenant, name: gymName, brand_config: { colors: { primary: brandColor } } })
+            setTenant({ ...tenant, name: gymName, brand_config: { colors: { primary: brandColor } }, features: features })
 
         } catch (error: any) {
             toast.error('Hata', { description: error.message })
@@ -190,6 +201,26 @@ export default function SettingsPage() {
                                     <span className="text-xs text-muted-foreground font-mono">{brandColor}</span>
                                 </div>
                                 <p className="text-xs text-muted-foreground">Bu renk dashboard genelinde (butonlar, vurgular) kullanılacaktır.</p>
+                            </div>
+
+                            <div className="space-y-4 pt-4 border-t border-white/5">
+                                <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                                    <ToggleLeft className="w-4 h-4" />
+                                    Özellik Yönetimi
+                                </label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {Object.keys(features).map((featureKey) => (
+                                        <label key={featureKey} className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5 cursor-pointer hover:bg-black/30 transition-colors">
+                                            <span className="capitalize text-sm font-medium text-white">{featureKey}</span>
+                                            <input
+                                                type="checkbox"
+                                                checked={features[featureKey]}
+                                                onChange={(e) => setFeatures({ ...features, [featureKey]: e.target.checked })}
+                                                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary bg-transparent"
+                                            />
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
 
                             <div className="pt-2">

@@ -31,6 +31,7 @@ export default function DemoPage() {
     const [isLoading, setIsLoading] = useState(true)
     const [selectedSession, setSelectedSession] = useState<DemoSession | null>(null)
     const [selectedClassType, setSelectedClassType] = useState<DemoClassType | null>(null)
+    const [showFeatures, setShowFeatures] = useState(false)
     const supabase = createClient()
 
     // Use current week
@@ -97,20 +98,24 @@ export default function DemoPage() {
     return (
         <div className="min-h-screen bg-black text-white p-4 md:p-8">
             {/* Demo Header */}
+            {/* Demo Header */}
             <div className="max-w-7xl mx-auto mb-8 flex justify-between items-center bg-zinc-900/50 p-6 rounded-2xl border border-white/5">
                 <div>
-                    <h1 className="text-2xl font-bold flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
-                        Canlı Demo Modu
-                    </h1>
-                    <p className="text-muted-foreground text-sm mt-1">
-                        Şu an okuma modundasınız. Gerçek verileri görmektesiniz.
-                    </p>
+                    <h1 className="text-3xl font-bold text-white mb-2">Canlı Demo Program</h1>
+                    <p className="text-muted-foreground">Gerçek zamanlı ders programı ve doluluk oranları.</p>
                 </div>
-                <Link href="/onboarding" className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium transition-all shadow-[0_0_15px_-5px_var(--color-primary)] flex items-center gap-2">
-                    Kendi Salonunu Kur
-                    <ArrowRight className="w-4 h-4" />
-                </Link>
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => setShowFeatures(true)}
+                        className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                    >
+                        <Info className="w-4 h-4" />
+                        Özellikleri İncele
+                    </button>
+                    <Link href="/login" className="px-5 py-2 bg-primary hover:bg-primary/90 rounded-lg text-sm font-medium transition-all shadow-lg shadow-primary/25">
+                        Yönetim Paneli
+                    </Link>
+                </div>
             </div>
 
             {/* Featured Classes */}
@@ -334,6 +339,66 @@ export default function DemoPage() {
                             </div>
                         </motion.div>
                     </>
+                )}
+            </AnimatePresence>
+
+            {/* Features Modal */}
+            <AnimatePresence>
+                {/* @ts-ignore */}
+                {typeof showFeatures !== 'undefined' && showFeatures && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        // @ts-ignore
+                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        // @ts-ignore
+                        onClick={() => setShowFeatures(false)}
+                    >
+                        <div className="glass-heavy max-w-4xl w-full p-8 rounded-2xl border border-white/10 overflow-y-auto max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                            <div className="flex justify-between items-center mb-8">
+                                <h2 className="text-3xl font-bold text-white">Platform Özellikleri</h2>
+                                {/* @ts-ignore */}
+                                <button onClick={() => setShowFeatures(false)} className="p-2 hover:bg-white/10 rounded-lg"><ArrowRight className="w-6 h-6 rotate-45" /></button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="space-y-4 p-4 rounded-xl bg-white/5 border border-white/5">
+                                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-400 mb-4"><Activity size={24} /></div>
+                                    <h3 className="font-bold text-white text-lg">Akıllı Ders Yönetimi</h3>
+                                    <p className="text-sm text-muted-foreground">Otomatik saat başı planlama, çakışma kontrolü ve eğitmen atama.</p>
+                                    <ul className="text-xs space-y-2 text-white/60">
+                                        <li className="flex gap-2">✓ QR Yoklama</li>
+                                        <li className="flex gap-2">✓ Telafi Dersi</li>
+                                    </ul>
+                                </div>
+
+                                <div className="space-y-4 p-4 rounded-xl bg-white/5 border border-white/5">
+                                    <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center text-green-400 mb-4"><Users size={24} /></div>
+                                    <h3 className="font-bold text-white text-lg">Üye Paneli</h3>
+                                    <p className="text-sm text-muted-foreground">Üyeler kendi panellerinden ders geçmişini, kalan haklarını ve ölçümlerini görebilir.</p>
+                                    <ul className="text-xs space-y-2 text-white/60">
+                                        <li className="flex gap-2">✓ Online Rezervasyon</li>
+                                        <li className="flex gap-2">✓ Vücut Analizi</li>
+                                    </ul>
+                                </div>
+
+                                <div className="space-y-4 p-4 rounded-xl bg-white/5 border border-white/5">
+                                    <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400 mb-4"><Info size={24} /></div>
+                                    <h3 className="font-bold text-white text-lg">Finans & Rapor</h3>
+                                    <p className="text-sm text-muted-foreground">Detaylı gelir gider takibi, eğitmen hakedişleri ve doluluk raporları.</p>
+                                    <ul className="text-xs space-y-2 text-white/60">
+                                        <li className="flex gap-2">✓ Paket Satışı</li>
+                                        <li className="flex gap-2">✓ Otomatik Faturalama</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div className="mt-8 pt-8 border-t border-white/10 flex justify-end gap-4">
+                                {/* @ts-ignore */}
+                                <button onClick={() => setShowFeatures(false)} className="px-6 py-2 hover:bg-white/10 rounded-lg">Kapat</button>
+                                <a href="/login" className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">Hemen Başla</a>
+                            </div>
+                        </div>
+                    </motion.div>
                 )}
             </AnimatePresence>
         </div>

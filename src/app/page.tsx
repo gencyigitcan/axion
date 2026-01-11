@@ -9,11 +9,29 @@ export default function Home() {
             Antigravity
           </h1>
 
-          <p className="text-xl text-muted-foreground mb-8 max-w-lg mx-auto">
-            Enterprise Sports Complex Management
-            <br />
-            <span className="text-sm opacity-50">v2.0.0 (2026 Edition)</span>
-          </p>
+          <div className="flex flex-col gap-4">
+            <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60 mb-2">
+              SaaS Spor Stüdyosu Yönetimi
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+              <div className="glass p-4 rounded-xl border border-white/5">
+                <h3 className="font-semibold text-lg text-primary mb-2">Üye Takibi</h3>
+                <p className="text-sm text-muted-foreground">Üye bilgileri, evrak yönetimi ve devamsızlık takibi.</p>
+              </div>
+              <div className="glass p-4 rounded-xl border border-white/5">
+                <h3 className="font-semibold text-lg text-primary mb-2">Online Rezervasyon</h3>
+                <p className="text-sm text-muted-foreground">Üyeler için mobil uyumlu ders programı ve rezervasyon.</p>
+              </div>
+              <div className="glass p-4 rounded-xl border border-white/5">
+                <h3 className="font-semibold text-lg text-primary mb-2">Beslenme Koçluğu</h3>
+                <p className="text-sm text-muted-foreground">Kişiye özel beslenme planları ve günlük takip bildirimleri.</p>
+              </div>
+              <div className="glass p-4 rounded-xl border border-white/5">
+                <h3 className="font-semibold text-lg text-primary mb-2">Gelişmiş Raporlar</h3>
+                <p className="text-sm text-muted-foreground">Gelir gider, doluluk oranları ve eğitmen performansı.</p>
+              </div>
+            </div>
+          </div>
 
           <div className="flex gap-4 justify-center">
             <a href="/login" className="px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-all shadow-[0_0_20px_-5px_var(--color-primary)]">

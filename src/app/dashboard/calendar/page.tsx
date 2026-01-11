@@ -230,6 +230,7 @@ export default function CalendarPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email: 'test@example.com', // TODO: Get actual user email
+                    trainerEmail: 'trainer@demo.com', // In real app, fetch from session.trainer.email
                     userName: 'Değerli Üyemiz',
                     studioName: 'Antigravity Studio',
                     className: session.class_type?.name,

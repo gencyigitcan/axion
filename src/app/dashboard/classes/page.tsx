@@ -107,6 +107,21 @@ export default function ClassesPage() {
         }
     }
 
+
+    const handleAttendance = async (sessionId: string, userId: string, status: 'attended' | 'noshow') => {
+        try {
+            await supabase.rpc('mark_session_attendance', {
+                p_session_id: sessionId,
+                p_user_ids: [userId],
+                p_status: status
+            })
+            toast.success(status === 'attended' ? 'Yoklama Alındı' : 'Gelmedi Olarak İşaretlendi')
+            // Refresh logic would go here
+        } catch (error) {
+            toast.error('İşlem başarısız')
+        }
+    }
+
     return (
         <div className="space-y-8">
             <div className="flex justify-between items-center">

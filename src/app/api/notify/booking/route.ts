@@ -19,8 +19,9 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Email required' }, { status: 400 })
         }
 
-        // Send Email
-        const result = await sendReservationEmail({
+
+        // Send Email to Member
+        const memberResult = await sendReservationEmail({
             to: email,
             subject: `Rezervasyon Onayı: ${className}`,
             userName,
@@ -30,7 +31,20 @@ export async function POST(request: Request) {
             classTime
         })
 
-        return NextResponse.json(result)
+        // Send Email to Trainer (If provided)
+        if (body.trainerEmail) {
+            await sendReservationEmail({
+                to: body.trainerEmail,
+                subject: `🔔 Yeni Öğrenci: ${className}`,
+                userName: 'Sayın Eğitmen',
+                studioName: studioName,
+                className,
+                classDate,
+                classTime
+            }).catch(e => console.error('Trainer email failed', e))
+        }
+
+        return NextResponse.json(memberResult)
     } catch (error) {
         console.error('Notification error:', error)
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
