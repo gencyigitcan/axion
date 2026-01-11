@@ -33,7 +33,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-4 justify-center mt-12">
             <a href="/login" className="px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-all shadow-[0_0_20px_-5px_var(--color-primary)]">
               Giriş Yap
             </a>

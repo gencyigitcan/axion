@@ -10,6 +10,7 @@ import { Building2, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react'
 export default function OnboardingPage() {
     const [step, setStep] = useState(1)
     const [isLoading, setIsLoading] = useState(false)
+    const [useDemoData, setUseDemoData] = useState(false)
     const [formData, setFormData] = useState({
         name: '',
         slug: '',
@@ -60,18 +61,28 @@ export default function OnboardingPage() {
 
             if (tenantError) throw tenantError
 
-            // 2. Create Owner Profile
+            // 2. Create Owner Profile (Use upsert to be safe)
             const { error: profileError } = await supabase
                 .from('user_profiles')
-                .insert({
+                .upsert({
                     user_id: user.id,
                     tenant_id: tenant.id,
                     role: 'owner',
                     email: user.email,
-                    full_name: 'İşletme Sahibi' // Can be generic for now
+                    full_name: 'İşletme Sahibi'
                 })
 
             if (profileError) throw profileError
+
+            // 3. Seed Demo Data if requested
+            if (useDemoData) {
+                toast.info('Demo verileri yükleniyor...')
+                const { error: seedError } = await supabase.rpc('seed_tenant_data', { p_tenant_id: tenant.id })
+                if (seedError) {
+                    console.error('Seed error:', seedError)
+                    toast.warning('Demo verileri tam yüklenemedi ama stüdyonuz hazır.')
+                }
+            }
 
             toast.success('Stüdyo Kurulumu Tamamlandı!', {
                 description: `${formData.name} başarıyla oluşturuldu.`
@@ -150,6 +161,19 @@ export default function OnboardingPage() {
                                     />
                                 </div>
                             </div>
+
+                            <label className="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+                                <input
+                                    type="checkbox"
+                                    className="w-5 h-5 rounded border-gray-600 text-primary focus:ring-primary bg-transparent"
+                                    checked={useDemoData}
+                                    onChange={(e) => setUseDemoData(e.target.checked)}
+                                />
+                                <div>
+                                    <span className="font-medium text-sm text-white block">Sistemi Keşfetmek İstiyorum</span>
+                                    <span className="text-xs text-muted-foreground block">Kurulum sırasında örnek üyeler, dersler ve paketler eklensin.</span>
+                                </div>
+                            </label>
                         </div>
 
                         <button
